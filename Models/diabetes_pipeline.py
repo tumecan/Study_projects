@@ -71,12 +71,12 @@ def grab_col_names(dataframe, cat_th=10, car_th=20):
     num_cols = [col for col in dataframe.columns if dataframe[col].dtypes != "O"]
     num_cols = [col for col in num_cols if col not in num_but_cat]
 
-    # print(f"Observations: {dataframe.shape[0]}")
-    # print(f"Variables: {dataframe.shape[1]}")
-    # print(f'cat_cols: {len(cat_cols)}')
-    # print(f'num_cols: {len(num_cols)}')
-    # print(f'cat_but_car: {len(cat_but_car)}')
-    # print(f'num_but_cat: {len(num_but_cat)}')
+    print(f"Observations: {dataframe.shape[0]}")
+    print(f"Variables: {dataframe.shape[1]}")
+    print(f'cat_cols: {len(cat_cols)}')
+    print(f'num_cols: {len(num_cols)}')
+    print(f'cat_but_car: {len(cat_but_car)}')
+    print(f'num_but_cat: {len(num_but_cat)}')
     return cat_cols, num_cols, cat_but_car
 
 def outlier_thresholds(dataframe, col_name, q1=0.25, q3=0.75):
@@ -144,7 +144,7 @@ def base_models(X, y, scoring="roc_auc"):
                    ('Adaboost', AdaBoostClassifier()),
                    ('GBM', GradientBoostingClassifier()),
                    ('XGBoost', XGBClassifier(use_label_encoder=False, eval_metric='logloss')),
-                   ('LightGBM', LGBMClassifier()),
+                   #('LightGBM', LGBMClassifier()),
                    # ('CatBoost', CatBoostClassifier(verbose=False))
                    ]
 
@@ -208,13 +208,6 @@ def voting_classifier(best_models, X, y):
     print(f"ROC_AUC: {cv_results['test_roc_auc'].mean()}")
     return voting_clf
 
-
-
-
-
-
-
-
 ################################################
 # Pipeline Main Function
 ################################################
@@ -222,12 +215,12 @@ def voting_classifier(best_models, X, y):
 import os
 
 def main():
-    df = pd.read_csv("/Users/mvahit/Desktop/DSMLBC6/datasets/diabetes.csv")
+    df = pd.read_csv("diabetes.csv")
     X, y = diabetes_data_prep(df)
     base_models(X, y)
     best_models = hyperparameter_optimization(X, y)
     voting_clf = voting_classifier(best_models, X, y)
-    os.chdir("/Users/mvahit/Desktop/DSMLBC6/")
+    os.chdir("diabetes")
     joblib.dump(voting_clf, "voting_clf_diabetes.pkl")
     print("Voting_clf has been created")
     return voting_clf

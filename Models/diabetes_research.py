@@ -22,9 +22,10 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import StandardScaler, LabelEncoder
+import sklearn
 from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
-from catboost import CatBoostClassifier
+#from catboost import CatBoostClassifier
 
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 500)
@@ -147,29 +148,20 @@ def grab_col_names(dataframe, cat_th=10, car_th=20):
     return cat_cols, num_cols, cat_but_car
 
 
-df = pd.read_csv("datasets/diabetes.csv")
+df = pd.read_csv("diabetes.csv")
 
-# Genel bakış
 check_df(df)
 
-# Değişken türlerinin ayrıştırılması
 cat_cols, num_cols, cat_but_car = grab_col_names(df, cat_th=5, car_th=20)
 
-# Kategorik değişkenlerin incelenmesi
 for col in cat_cols:
     cat_summary(df, col)
 
-# Sayısal değişkenlerin incelenmesi
 df[num_cols].describe().T
 
-# for col in num_cols:
-#     num_summary(df, col, plot=True)
-
-# Sayısal değişkenkerin birbirleri ile korelasyonu
 correlation_matrix(df, num_cols)
 
 
-# Target ile sayısal değişkenlerin incelemesi
 for col in num_cols:
     target_summary_with_num(df, "Outcome", col)
 
@@ -203,8 +195,6 @@ def one_hot_encoder(dataframe, categorical_cols, drop_first=False):
     return dataframe
 
 
-
-# Değişken isimleri büyütmek
 df.columns = [col.upper() for col in df.columns]
 
 # Glucose
@@ -238,18 +228,14 @@ cat_cols = [col for col in cat_cols if "OUTCOME" not in col]
 df = one_hot_encoder(df, cat_cols, drop_first=True)
 check_df(df)
 
-# Son güncel değişken türlerimi tutuyorum.
 cat_cols, num_cols, cat_but_car = grab_col_names(df, cat_th=5, car_th=20)
 
-# Aykırı değer incelemesi:
 for col in num_cols:
     print(col, check_outlier(df, col, 0.05, 0.95))
 
 replace_with_thresholds(df, "INSULIN")
 
-# Standartlaştırma
-
-
+# Standardization
 X_scaled = StandardScaler().fit_transform(df[num_cols])
 df[num_cols] = pd.DataFrame(X_scaled, columns=df[num_cols].columns)
 
@@ -258,8 +244,6 @@ X = df.drop(["OUTCOME"], axis=1)
 
 check_df(X)
 
-
-# Öyleyse tüm bu işlemleri bir fonksiyon içerisinde tanımlayalım:
 
 def diabetes_data_prep(dataframe):
     dataframe.columns = [col.upper() for col in dataframe.columns]
@@ -299,7 +283,7 @@ def diabetes_data_prep(dataframe):
     return X, y
 
 
-df = pd.read_csv("datasets/diabetes.csv")
+df = pd.read_csv("diabetes.csv")
 check_df(df)
 
 X, y = diabetes_data_prep(df)
@@ -329,8 +313,7 @@ def base_models(X, y, scoring="roc_auc"):
 
 
 base_models(X, y, scoring="f1")
-import sklearn
-sklearn.metrics.SCORERS.keys()
+sklearn.metrics.get_scorer_names()
 
 
 ######################################################
